@@ -16,11 +16,10 @@ async def fetch_transcript(video_id: str) -> list:
         t = YouTubeTranscriptApi.get_transcript(
             video_id, 
             languages=["en", "ta", "hi", "en-US", "en-GB"],
-            cookies="cookies.txt"
+            cookies="cookies.txt" 
         )
         return [{"text": s["text"], "start": s["start"]} for s in t]
     return await asyncio.to_thread(_fetch)
-
 def chunk_transcript(
     segments: list,
     metadata: dict,
