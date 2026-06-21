@@ -12,6 +12,8 @@ class Settings(BaseSettings):
     top_k            : int = 5
     jwt_algorithm: str = "HS256"
     jwt_expire_hours: int = 24
+    webshare_proxy_username: str = ""
+    webshare_proxy_password: str = ""
 
     pinecone_index_name: str = "zeno"
     pinecone_cloud: str = "aws"

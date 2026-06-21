@@ -2,8 +2,10 @@ import asyncio
 from typing import List
 from langchain_core.documents import Document
 from youtube_transcript_api import YouTubeTranscriptApi
+from youtube_transcript_api.proxies import WebshareProxyConfig
 from app.core.config import settings
 from app.services.embeddings import get_tokenizer
+
 
 def seconds_to_timestamp(secs: float) -> str:
     secs = int(secs)
@@ -11,15 +13,22 @@ def seconds_to_timestamp(secs: float) -> str:
     m, s = divmod(rem, 60)
     return f"{h}:{m:02d}:{s:02d}" if h else f"{m}:{s:02d}"
 
+
 async def fetch_transcript(video_id: str) -> list:
     def _fetch():
-        t = YouTubeTranscriptApi.get_transcript(
-            video_id, 
-            languages=["en", "ta", "hi", "en-US", "en-GB"],
-            cookies="cookies.txt" 
-        )
-        return [{"text": s["text"], "start": s["start"]} for s in t]
+        proxy_config = None
+        if settings.webshare_proxy_username and settings.webshare_proxy_password:
+            proxy_config = WebshareProxyConfig(
+                proxy_username=settings.webshare_proxy_username,
+                proxy_password=settings.webshare_proxy_password,
+            )
+        ytt = YouTubeTranscriptApi(proxy_config=proxy_config)
+        t = ytt.fetch(video_id, languages=["en", "ta", "hi", "en-US", "en-GB"])
+        return [{"text": s.text, "start": s.start} for s in t]
+
     return await asyncio.to_thread(_fetch)
+
+
 def chunk_transcript(
     segments: list,
     metadata: dict,
