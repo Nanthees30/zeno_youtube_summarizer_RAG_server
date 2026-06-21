@@ -27,4 +27,5 @@ dependencies = [
     "slowapi>=0.1.9",
     "tiktoken>=0.7.0",
     "numpy",
+    "pinecone>=9.1.0",
 ]

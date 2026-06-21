@@ -13,9 +13,12 @@ def seconds_to_timestamp(secs: float) -> str:
 
 async def fetch_transcript(video_id: str) -> list:
     def _fetch():
-        ytt = YouTubeTranscriptApi()
-        t = ytt.fetch(video_id, languages=["en", "ta", "hi", "en-US", "en-GB"])
-        return [{"text": s.text, "start": s.start} for s in t]
+        t = YouTubeTranscriptApi.get_transcript(
+            video_id, 
+            languages=["en", "ta", "hi", "en-US", "en-GB"],
+            cookies="cookies.txt"
+        )
+        return [{"text": s["text"], "start": s["start"]} for s in t]
     return await asyncio.to_thread(_fetch)
 
 def chunk_transcript(
